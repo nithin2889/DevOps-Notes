@@ -1,0 +1,135 @@
+What is the focus of DevOps?
+The focus of DevOps is on enhancing the communication between the development and the operations 
+team.
+-----------------------------------------------------------------------------------------------
+How did DevOps enhance the communication between teams?
+The first thing DevOps did, was to bring the operations team really really close to the development teams. In more mature enterprises, development and operations were combined into a single team. They started sharing common goals, and both teams started to understand the challenges the other team faces. 
+
+DevOps tried to enhance the communication by bringing the operations team, as close as possible to the development team.
+-----------------------------------------------------------------------------------------------
+What are the automation areas where the DevOps teams focused on?
+In addition to the focus areas of Agile, which were continuous integration and test automation, the DevOps teams were also focused on automating the activities of operations teams. Operations teams are typically involved in provisioning servers, installing software onto these servers, configuring the software, and deploying applications. DevOps teams are focused on automating all these steps.
+
+The key terminology around DevOps are Continuous Deployment, Continuous Delivery, and Infrastructure as a code (IAAC).
+
+Continuoys Integration - Continuous Integration was focused on running the tests, and the code quality checks.
+
+Continuous Deployment - Continuous Deployment is all about continuously deploying new version of software on test environments. Continuous Deployment takes it to the next level by adding deployment to the environment.
+
+Continuous Delivery - the environment. in more mature organizations like Google & Facebook, continuous delivery helps in continuously deploying software to production. In addition to running the tests, building the software and packaging the application app, the application is deployed to the test environment, and on getting the right approvals from your QA team, or from your UAT team, the software was directly deployed into the next environments up to production.
+
+Infrastructure as a Code (IAAC) - It's all about treating your infrastructure the same way you treat your application code. It's all about creating your infrastructure, that is the servers, load balancers, database in an automated way, using code and configuration.
+
+The focus areas of automation in DevOps are continuous deployment, continuous delivery, and infrastructure as a code.
+-----------------------------------------------------------------------------------------------
+How did DevOps help in getting immediate feedback?
+DevOps brings the operations and development teams closer because development and operations are part of the same team. The entire team understands the challenges associated with operations, and the challenges associated with development. Any operational problem gets the quick attention of the developers and any challenge in taking software live, gets early attention of the operations team.
+-----------------------------------------------------------------------------------------------
+What is containerization? Why is it needed and how does it make the DevOps world easy?
+We are in the world of microservices. There would be hundreds of microservices. Some of them will be built in Java, some of them in Python and some of them might be built in JavaScript. The deployment environment which is needed to run a JavaScript application, will be different from the deployment environment you would need, to run a Java application, or a Python application. 
+
+The deployment procedures might also vary between different applications. If you're trying to automate the provisioning of servers and configuring them for your microservices, then you would need different configuration and scripts for a Java application, and different configuration scripts for JavaScript application. This will make maintaining these environments a big headache.
+
+Is it possible to have the same deployment environment, and the same deployment procedure for all microservices users? That's where docker provides an amazing solution.
+
+Once you have any application or microservice, you can build a Docker image containing the microservice. Once you build a Docker image, it does not matter whether the Docker image is for a python application, or a Java application, or a JavaScript application. You still run it the same way. The software you'd need to run this Docker image is the same irrespective of what the Docker image contains. Once you use containers, your Infrastructure as a Code becomes really really simple.
+
+You can provision a cluster of servers which have the container runtime installed on that, and you can directly deploy containers onto them. You don't need to worry if the container is of a Java application, a Python application or a JavaScript application.
+-----------------------------------------------------------------------------------------------
+Docker in DevOps:
+First DevOps usecase with Docker - You're part of DevOps team which is working on an amazing new project. You're going to build amazing APIs in Java, Python and JavaScript. Three different languages. You are ready with the basic versions of all these applications, and you'd want to deploy them quickly to the QA environment. You also have a new team member who's pairing up with you. He wants to understand how you would want to deploy applications to QA. You both sit at a desk, launch up the terminal, and you are ready to execute a few commands.
+
+Let's deploy the Python application first.
+So you start executing a simple command - 
+
+docker run -p 5000:5000 in28min/hello-world-python:0.0.1.RELEASE
+
+Now your new team member who's sitting beside you is stunned. He has a lot of experience doing operations in an earlier team, and he says in my team, I used to get a document from my development team describing the hardware, the specific version of the operating system, the specific version of the software, and the specific version of the application to deploy. I used to manually follow the instructions - create a server, install an operating system on top of it, and install the right software, install Tomcat or whatever you'd need to run your application, and install the right language - Java or Python. After that is when I would download the application and deploy it, and very manually setting up the environment. I used to make a lot of mistakes. 
+
+So you tell him with Docker, we don't really need any details about the application that we would want to run. We don't really need to worry about what language the application is built with. Whether it is a Java, or a Python or a Javascript application. We don't really need to worry about which version of Java or which version of Python or about the frameworks which were used to build the application with. What software was needed to run the application with. All that the developer needs to do, is to create something called as a docker image, and you can run the image the same way wherever the Docker runtime is installed. It does not matter if the image contains a Java application, or a Python application, or a NodeJS application - you still run it the same way.
+
+To launch the Java application, all that you would need to do is to change the image name from Python to Java.
+
+docker run -p 5000:5000 in28min/hello-world-java:0.0.1.RELEASE
+
+Once you change the image name and launch the application, you would see the response from a Java application. The same goes for the JavaScript project as well. We change the image name and launch the application.
+
+docker run -p 5000:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
+
+Once you have a Docker image it does not matter whether it's a Docker image of a python application, or a Java application, or a NodeJS application. You can run it the same way using the same instructions with Docker. With Docker, you don't really need to follow a set of manual instructions. All that you need to do is execute a simple command, and your applications will be up and running.
+-----------------------------------------------------------------------------------------------
+Infrastructure As A Code (IAAC) - What is infrastructure as code, and why do we need it? 
+
+Let's start with understanding the problem if you don't have IAAC. You provision your servers manually, and install your software manually. 
+
+You start with provisioning servers. Let's say you are using the cloud. You probably would provision virtual server from the cloud. You then go ahead and manually install some software on it. Maybe something like Java, or Tomcat, and then you'd need to configure the softwares manually - you need to configure Tomcat, and then you'd go ahead and deploy your application. 
+
+When it comes to the microservices architecture, you might have tons of applications. You might have a lot of microservices with several instances. Each of these microservices might be developed in different technologies. Some of the microservices might be written in Java and some other might be in Python, and the other microservices might be developed using JavaScript. In such kind of a varied environment, the manual approach is very difficult to implement. This will not only slow down your application teams but also is error prone.
+
+This can be fixed by IAAC.
+The main concept behind Infrastructure As A Code is to treat your infrastructure the same way as you treat your application code. Just like you create a deployable unit from your code, you need to create the infrastructure from code and configuration.
+
+If you implement your infrastructure as a code properly, your infrastructure team can focus on value added work rather than focusing on routine work of installing servers. If you're able to automate your infrastructure, you'd be having less number of errors and you'll be able to quickly recover from failures. The added advantage of using infrastructure as a code is that if you have multiple environment for each of these microservices, and multiple instances for each of these environments, then you can be confident that these servers are consistent. The most important steps in infrastructure as a code are provisioning a server, and customizing the software on the server.
+
+The most popular tool for provisioning servers is Terraform. There are also cloud specific alternatives to terraform like AWS Cloud Formation.
+
+With Terraform, you can create a number of resources in the cloud like virtual servers, load balancers, databases, networking configuration - all that just from your Terraform configuration. So provisioning tools like terraform will help you to create a server based on a template, which might be created by tools like Packer or Amazon Machine Image (AMI) provide by Amazon.
+
+The next important step in infrastructure as a code is something called as Configuration Management. 
+
+Configuration Management is all about managing the software which is installed on your servers. Once you provision the servers, you would want to install the right software, and configure it the way you'd want to do it. The tools which will help you to do that are called Configuration Management tools. The most popular configuration management tools are Ansible, Chef and Puppet.
+
+So you can use Terraform to provision hundreds of servers on the cloud and you can use Ansible to configure all the servers with the softwares you want.
+
+Once you have the servers provisioned, and the softwares configured on them, you can deploy your applications onto these servers using either Jenkins or Azure DevOps. You can deploy applications as part of your continuous deployment pipelines to these servers.
+-----------------------------------------------------------------------------------------------
+Getting started with Continuous Integration, Deployment and Delivery:
+Continuous Integration - The first question you'd be thinking about is why do we need continuous integration.
+
+The number one reason for implementing Continuous Integration, Continuous Delivery, or Continuous Deployment is to get quick feedback.
+
+Whenever you commit some code into your GitHub repository or any version control system that you are doing, you'd want to
+
+1. immediately run your unit tests, 
+2. check your code quality, 
+3. run your unit tests and find out what the coverage for them is, 
+4. be able to see if you're able to package your application well and whether you have any problems with it. 
+5. be able to run your integration tests and see if you have any problems with them. 
+
+You don't want to find this out a few days after the code is committed. That's where the continuous integration really really helps. You will find problems early and you will get immediate feedback.
+-----------------------------------------------------------------------------------------------
+What is the difference between Continuous Integration, Continuous Deployment, and Continuous Delivery?
+Continuous Integration:
+===> Code Commit -> Unit Tests -> Code Quality -> Package -> Integration Tests
+In a typical Continuous Integration cycle, on commit of code you'd run the unit tests, you'd run your code quality checks, you'd do the packaging, and you'd run the integration tests.
+
+Continuous Deployment:
+===> Code Commit -> Unit Tests -> Integration Tests -> Package -> Deploy -> Automated Tests
+In Continuous Deployment, you take an additional step. You'd go ahead and deploy the package into an environment you are deploying to, let's say, a dev environment or a QA environment. In addition to this you might even run a few more automated tests like the smoke test.
+
+Continuous Delivery:
+===> Code Commit -> Unit Tests -> Integration Tests -> Package -> Deploy -> Automated Tests -> Testing Approval -> Deploy To Next Environments
+Continuous Delivery will take this one step further. In continuous delivery, along with packaging deploying and running your smoke tests, you would set up a pipeline in such a way that all the appropriate approvals on that specific environment, let's say, if you get an approval in a test environment, you would go ahead and deploy the application to the staging environment. If you get an approval in an UAT environment, you'd go ahead and automatically deploy the application out to production. So, in continuous delivery, if you are all set with a few manual approvals, then you'll be able to deploy the code out to production.
+
+The most popular tools to implement Continuous Integration, Continuous Development, and Continuous Delivery are Jenkins and Azure DevOps.
+
+How do you implement these using Azure DevOps or Jenkins? 
+You'd create something called pipelines. Pipelines have a number of steps. We could create a continuous integration pipelines, or a continuous delivery pipelines or a continuous deployment pipelines.
+
+Let's look at each of these steps in a little more depth.
+1. Code Commit: Typically, the code commit is done in a version control system. The most popular version control system today is Git.
+
+2. Unit Tests: Unit tests are typically used to test your methods and classes. Typically, the frameworks you would be talking about in here if you're using JavaScript then Mocha or Jasmine. If you are using Python, PyTest is one of the popular frameworks. If you are using Java, then JUnit is one of the most popular unit testing frameworks. 
+
+3. Integration Tests: Next, we would be talking about integration tests. This is where frameworks like Cucumber, Selenium, Protractor come into picture. Over here, you would write automated tests for a few modules integrated together. 
+
+4. Package: The next step is the package step where you would actually build a deployable unit for your application. The typical tools which are used at this stage are npm for JavaScript, pip for Python, and Maven or Gradle for Java.
+
+5. Deploy: Once you have the application package ready you can easily deploy it to any of your environment either using Jenkins or by using Azure DevOps.
+
+6. Automated Tests: Once you deploy your code to an environment, you can run additional automated tests. These automated tests might be smoke tests, or load tests, or performance tests.
+
+7. Testing Approvals: So, once your automated tests run fine and your manual tests are also fine, you can go ahead and approve to deploy the code automatically to the next environment. That is, if you are approving the testing from a QA stage, the code would probably be deployed to something like a unit environment or a staging environment. If you're doing the approval in a UAT stage, the code might be deployed to production.
+-----------------------------------------------------------------------------------------------
+Azure DevOps:
+Azure DevOps enables continuous integration, continuous deployment, and continuous delivery of software. You can run your unit tests, integration tests, you can package your application, you can deploy your application, you can run automated test, load test, and you can also configure approvals using Azure DevOps.
