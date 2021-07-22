@@ -219,3 +219,105 @@ Now, you can also have a different kind of a relationship between the jobs. You 
 So, what we're saying is, job2 and job3 can be kicked off as soon as job1 is completed and the Job4, on the other hand, needs to wait for job2 and job3 to complete.
 
 So, the interesting thing for you to understand is the steps in a job are always executed sequentially. However, the jobs can be run in parallel and if you'd want to actually manage the dependencies between them, you have to use dependsOn.
+-----------------------------------------------------------------------------------------------
+Creating pipelines for playing with stages:
+In this step, let's start focusing on something called stages. Why do we need stages and how do we organize jobs into different stages?
+
+
+If you want to create multiple jobs or multiple stages, we can start with adding stages in here.
+
+````
+stages:
+- stage: Build
+  jobs:
+  - job: FirstJob
+    steps:
+    - bash: echo Build FirstJob
+  - job: SecondJob
+    steps:
+    - bash: echo Build SecondJob
+- stage: DevDeploy
+  dependsOn: Build
+  jobs:
+  - job: DevDeployJob
+    steps:
+    - bash: echo DevDeployJob
+- stage: QADeploy
+  dependsOn: Build
+  jobs:
+  - job: QADeployJob
+    steps:
+    - bash: echo QADeployJob
+- stage: ProdDeploy
+  dependsOn:
+  - DevDeploy
+  - QADeploy
+  jobs:
+  - job: ProdDeployJob
+    steps:
+    - bash: echo ProdDeployJob
+````
+
+The first stage here is the Build stage. After that the next stage is the DevDeploy, next is QADeploy, and finally the ProdDeploy. Stages can inturn have jobs as we know it. So, we can have an array of jobs. In the job, I can specify different steps which I would want to execute as part of a job. 
+
+The stages are always run sequentially where as the jobs within a stage might run in parallel. However, it's possible to define dependencies in stages to make them a little bit more dynamic.
+
+To add dependencies between the stages, we can use the same dependsOn. Here, we would use the names of the stages. Earlier, when we configured dependencies between the jobs, we used job names. However, for configuring dependencies between the stages we use the stage names.
+-----------------------------------------------------------------------------------------------
+Playing with variables and dependsOn for Stages:
+All these levels which are present: stages, jobs, and steps, allow us to organize the steps into a efficient pipeline. So, your stages typically reflect the high-level things. So, stages are build and creating artifacts.Once you have the artifacts ready, you'd want to deploy them to the other stages like DEV, QA, and PROD. Within these stages, there might be multiple jobs that you'd need to perform. In a DevDeploy, you might want to actually provision a database. You might want to provision an application server and then deploy. So, you might want to run multiple jobs in parallel. However, if you'd want to deploy something, you'd need to actually first have a database provisioned and you should have a application server provisioned before you can deploy and that's where dependsOn help us. 
+
+Now, think about the job to provision the database. It might not be a single-step job. There might be multiple steps involved. Same with provisioning an application server, or doing a deployment. It might involve multiple steps. That's where all this hierarchy really helps.
+
+So, a stage can contain multiple jobs and each of these jobs can contain multiple tasks. The other thing which we have learned is each job would run on a separate agent. Agents are nothing but servers which run your jobs.
+
+Now, let's focus on variables. Variables help in making the entire pipeline configuration dynamic.
+
+The thing is, you can have variables at the level of the pipeline, at the levels of a stage, and also at the levels of a job.
+
+````
+stages:
+- stage: Build
+  jobs:
+  - job: FirstJob
+    steps:
+    - bash: echo Build FirstJob
+    - bash: echo $(PipelineLevelVariable)
+  - job: SecondJob
+    steps:
+    - bash: echo Build SecondJob
+- stage: DevDeploy
+  variables:
+    environment: Dev
+  dependsOn: Build
+  jobs:
+  - job: DevDeployJob
+    steps:
+    - bash: echo $(environment)DeployJob
+````
+
+Using variables we can make our pipelines very efficient and reuse the logic across multiple stages.
+-----------------------------------------------------------------------------------------------
+Understanding Azure DevOps pipeline variables:
+There are a number of variables which are predefined as part of our pipelines in Azure DevOps. There is a huge list of variables that are pre-configured. There are predefined variables to get information about 
+
+1. the agent
+2. the build itself 
+3. about the pipeline, and 
+4. if you are doing a deployment job, then you can actually get information about the deployment itself. 
+
+Other than that there are a lot of system variables present which helps you to get information about jobs and different stages.
+
+1. Build.BuildNumber - gives the number of the build.
+
+2. Build.BuildId - gives the ID of the build.
+
+3. Build.SourceBranchName - source branch from which the build has been triggered off from.
+
+4. Build.SourcesDirectory - gives information about the build directories.
+
+5. System.DefaultWorkingDirectory - gives information about the working directory.
+
+6. Build.ArtifactStagingDirectory - you can get information about the staging directory. Whenever you are doing a build, staging directory is one of the most important things because that's where you'd want to put your artifacts to. When we do a build and when we'd want to deploy it to DEV, what we would want to do is, we would want to build an artifact and actually deploy it to a DEV environment and use the same artifact to deploy to a QA environment or a stage environment. Therefore the artifacts staging directory becomes very important. This is kind of an intermediate place where we put the things into. At the end of the build stage, all the artifacts would go into the artifact staging directory and from there we can do something called a publish and in the deploy stage you can actually take the published artifacts and deploy them directly.
+
+7. ls -R $(System.DefaultWorkingDirectory) - to have a look at what is present in the default working directory.
