@@ -321,3 +321,103 @@ Other than that there are a lot of system variables present which helps you to g
 6. Build.ArtifactStagingDirectory - you can get information about the staging directory. Whenever you are doing a build, staging directory is one of the most important things because that's where you'd want to put your artifacts to. When we do a build and when we'd want to deploy it to DEV, what we would want to do is, we would want to build an artifact and actually deploy it to a DEV environment and use the same artifact to deploy to a QA environment or a stage environment. Therefore the artifacts staging directory becomes very important. This is kind of an intermediate place where we put the things into. At the end of the build stage, all the artifacts would go into the artifact staging directory and from there we can do something called a publish and in the deploy stage you can actually take the published artifacts and deploy them directly.
 
 7. ls -R $(System.DefaultWorkingDirectory) - to have a look at what is present in the default working directory.
+-----------------------------------------------------------------------------------------------
+Creating Azure DevOps Tasks for Copy Files and Publish Artifacts: 
+Here we have added a task to copy files using the Show Assistant. Show assistant is really useful, when you'd want to use pre-built tasks.
+
+````
+stages:
+- stage: Build
+  jobs:
+  - job: FirstJob
+    steps:
+    - bash: echo Build FirstJob
+    - bash: java -version
+    - bash: node --version
+    - bash: python --version
+    - bash: mvn -version
+    - bash: ls -R $(Build.ArtifactStagingDirectory)
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: |
+          **/*.yml
+          **/*.tf
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - bash: ls -R $(Build.ArtifactStagingDirectory)
+````
+
+This script will copy all the YAML and Terraform Files from the default working directory to the artifactory staging directory. 
+
+When we are actually doing a pipeline, you might want to share content between different stages of the pipeline. So, a build stage might want to have an output and the output you'd want to share with the DevDeploy stage. How can we do that? The way you can do that is by publishing artifacts. To publish artifacts, we have a task for it and is available via the Show Assistant.
+
+````
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+````
+
+There is a Publish Build Artifacts task. By default, ArtifactStagingDirectory is being published and by default it's giving it a name as `drop`. Once you save the changes and the execution is complete the artifacts will be published. 
+
+You will be able to see all the files present as an artifact somewhere and all the rest of the stages can make use of these artifacts. Let's say, you are building a JAR file or let's say you are building a compressed JavaScript file. What you can do is, you can create a artifact for it and then you can use either the JAR, the WAR, or the compressed JavaScript file to deploy in the next stages. So, that's the reason why the publish artifact step is really useful.
+-----------------------------------------------------------------------------------------------
+Running Azure DevOps jobs on multiple agents:
+The first thing we'd want to look at right now is something called `strategy`. Let's say I'd want to run the same build on multiple operating systems - Ubuntu, and MacOS. How can you do that? The way you can do that is by strategy.
+
+````
+strategy:
+  matrix:
+    linux:
+      operatingSystem: 'ubuntu-latest'
+    mac:
+      operatingSystem: 'macos-latest'
+
+pool:
+  vmImage: $(operatingSystem)
+
+steps:
+- script: echo Running on $(operatingSystem)
+  displayName: 'Run a one-line script'
+````
+-----------------------------------------------------------------------------------------------
+Understanding Azure DevOps Deployment Jobs - Environments and Approval:
+Earlier, we looked at Stages, Jobs, and Tasks. One of the interesting things to know is that there is a special variety of job called Deployments. 
+
+Instead of using a job, if you use deployment, you have a few additional features that you would get. What are those features? For deployment, you can actually configure something called a strategy.
+
+````
+stages:
+- stage: Build
+  jobs: 
+  - job: BuildJob
+    steps:
+    - bash: echo "Do the build"
+- stage: DevDeploy
+  jobs:
+  - deployment: DevDeployJob
+    environment: Dev
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo deploy to Dev
+- stage: QADeploy
+  jobs:
+  - deployment: QADeployJob
+    environment: QA
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo deploy to QA
+````
+
+The great thing about a deployment is you can associate a deployment with something called an environment. If you look at the DevDeploy right now, we just have one job which is a deployment job and this is going to deploy in a environment called Dev and we are using a strategy of runOnce to run this all at once. The same goes with the QA environment as well.
+
+We can add environment specific approver in the approvals and checks by clicking on the Environments option. So, how does this help? 
+
+Typically, whenever you have multiple environments, let's say Dev, QA, Stage, and Production, you'd want to create pipelines to automate the deployment from Dev to QA, QA to Stage, and Stage to Production. But between these environments you would want an approval. Let's say, you are pushing something from QA to Stage and the QA lead should approve the move to stage. This is what we can achieve with the approvals and checks. We can approve a release. Until and unless teh QA lead does not approve the changes will not be deployed on to the QA environment.
+-----------------------------------------------------------------------------------------------
+Playing with Azure DevOps Releases:
